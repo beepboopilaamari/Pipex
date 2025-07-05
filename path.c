@@ -1,0 +1,78 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   path.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ilaamari <ilaamari@42nice.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/05 23:52:30 by ilaamari          #+#    #+#             */
+/*   Updated: 2025/07/05 23:52:30 by ilaamari         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "pipex.h"
+
+static char	*strjoin(char const *s1, char const *s2)
+{
+	int		sizetotal;
+	char	*res;
+	int		i;
+	int		j;
+
+	if (s1 && s2)
+	{
+		sizetotal = strlen(s1) + strlen(s2);
+		res = malloc(sizeof(char) * (sizetotal + 1));
+		if (res == NULL)
+			return (NULL);
+		i = 0;
+		j = 0;
+		while (s1[i])
+			res[j++] = s1[i++];
+		i = 0;
+		while (s2[i])
+			res[j++] = s2[i++];
+		res[sizetotal] = '\0';
+		return (res);
+	}
+	return (NULL);
+}
+
+static char	*join_path(char *path, char *cmd)
+{
+	char	*tmp;
+	char	*exec;
+
+	tmp = strjoin(path, "/");
+	exec = strjoin(tmp, cmd);
+	free(tmp);
+	return (exec);
+}
+
+char	*find_path(char *cmd, char **envp)
+{
+	char	**paths;
+	int		i;
+	char	*part_path;
+
+	i = 0;
+	while (envp[i] && strncmp(envp[i], "PATH", 4))
+		i++;
+	if (envp[i] == NULL)
+		return (NULL);
+	paths = split(envp[i] + 5, ':');
+	i = 0;
+	while (paths[i])
+	{
+		part_path = join_path(paths[i], cmd);
+		if (access(part_path, F_OK) == 0)
+		{
+			free_array(paths);
+			return (part_path);
+		}
+		free(part_path);
+		i++;
+	}
+	free_array(paths);
+	return (NULL);
+}
