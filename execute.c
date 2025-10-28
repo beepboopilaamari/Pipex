@@ -16,9 +16,7 @@ static void	handle_cmd_error(char **cmd, char *path)
 {
 	if (!path)
 	{
-		write(STDERR_FILENO, "command not found: ", 19);
-		write(STDERR_FILENO, cmd[0], strlen(cmd[0]));
-		write(STDERR_FILENO, "\n", 1);
+		perror(cmd[0]);
 		free_array(cmd);
 		exit(127);
 	}

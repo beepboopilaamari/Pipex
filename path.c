@@ -12,6 +12,27 @@
 
 #include "pipex.h"
 
+static char	*strdup(const char *s)
+{
+	char	*new;
+	int		i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	new = malloc(sizeof(char) * (i + 1));
+	if (!new)
+		return (NULL);
+	i = 0;
+	while (s[i])
+	{
+		new[i] = s[i];
+		i++;
+	}
+	new[i] = '\0';
+	return (new);
+}
+
 static char	*strjoin(char const *s1, char const *s2)
 {
 	int		sizetotal;
@@ -49,7 +70,7 @@ static char	*join_path(char *path, char *cmd)
 	return (exec);
 }
 
-char	*find_path(char *cmd, char **envp)
+static char	*search_in_path(char *cmd, char **envp)
 {
 	char	**paths;
 	int		i;
@@ -65,7 +86,7 @@ char	*find_path(char *cmd, char **envp)
 	while (paths[i])
 	{
 		part_path = join_path(paths[i], cmd);
-		if (access(part_path, F_OK) == 0)
+		if (access(part_path, F_OK | X_OK) == 0)
 		{
 			free_array(paths);
 			return (part_path);
@@ -75,4 +96,22 @@ char	*find_path(char *cmd, char **envp)
 	}
 	free_array(paths);
 	return (NULL);
+}
+
+char	*find_path(char *cmd, char **envp)
+{
+	char	*i;
+
+	i = cmd;
+	while (*i)
+	{
+		if (*i == '/')
+		{
+			if (access(cmd, F_OK | X_OK) == 0)
+				return (strdup(cmd));
+			return (NULL);
+		}
+		i++;
+	}
+	return (search_in_path(cmd, envp));
 }
