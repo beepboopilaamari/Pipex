@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ilaamari <ilaamari@42nice.fr>              +#+  +:+       +#+        */
+/*   By: ilaamari <ilaamari@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 23:52:18 by ilaamari          #+#    #+#             */
-/*   Updated: 2025/07/05 23:52:18 by ilaamari         ###   ########.fr       */
+/*   Updated: 2025/10/29 17:41:09 by ilaamari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,30 +67,30 @@ static char	*word_dup(const char *str, int start, int finish)
 	return (word);
 }
 
-char	**split(char const *s, char c)
+char	**ft_split(char const *s, char c)
 {
 	size_t	i;
 	size_t	j;
 	int		index;
-	char	**split_str;
+	char	**ft_split_str;
 
-	split_str = malloc((word_count(s, c) + 1) * sizeof(char *));
-	if (!s || !split_str)
+	ft_split_str = malloc((word_count(s, c) + 1) * sizeof(char *));
+	if (!s || !ft_split_str)
 		return (0);
 	i = 0;
 	j = 0;
 	index = -1;
-	while (i <= strlen(s))
+	while (i <= ft_strlen(s))
 	{
 		if (s[i] != c && index < 0)
 			index = i;
-		else if ((s[i] == c || i == strlen(s)) && index >= 0)
+		else if ((s[i] == c || i == ft_strlen(s)) && index >= 0)
 		{
-			split_str[j++] = word_dup(s, index, i);
+			ft_split_str[j++] = word_dup(s, index, i);
 			index = -1;
 		}
 		i++;
 	}
-	split_str[j] = 0;
-	return (split_str);
+	ft_split_str[j] = 0;
+	return (ft_split_str);
 }
