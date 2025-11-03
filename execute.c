@@ -6,7 +6,7 @@
 /*   By: ilaamari <ilaamari@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 23:52:39 by ilaamari          #+#    #+#             */
-/*   Updated: 2025/10/29 17:41:23 by ilaamari         ###   ########.fr       */
+/*   Updated: 2025/11/03 18:50:31 by ilaamari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	execute(char *argv, char **envp)
 	handle_cmd_error(cmd, path);
 	if (execve(path, cmd, envp) == -1)
 	{
-		perror("execve");
+		perror("execve"); // fix this by handling issues that dont recognize the command (which can't be found) and handle all errors independently 
 		free_array(cmd);
 		free(path);
 		exit(127);
