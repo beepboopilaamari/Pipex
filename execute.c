@@ -6,7 +6,7 @@
 /*   By: ilaamari <ilaamari@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 23:52:39 by ilaamari          #+#    #+#             */
-/*   Updated: 2025/11/03 18:50:31 by ilaamari         ###   ########.fr       */
+/*   Updated: 2025/11/03 18:58:47 by ilaamari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,35 @@ static void	handle_cmd_error(char **cmd, char *path)
 {
 	if (!path)
 	{
-		perror(cmd[0]);
+		write(STDERR_FILENO, "command not found: ", 19);
+		write(STDERR_FILENO, cmd[0], ft_strlen(cmd[0]));
+		write(STDERR_FILENO, "\n", 1);
 		free_array(cmd);
 		exit(127);
 	}
+}
+
+static void	handle_execve_error(char **cmd, char *path)
+{
+	if (access(path, F_OK) != 0)
+	{
+		write(STDERR_FILENO, "command not found: ", 19);
+		write(STDERR_FILENO, cmd[0], ft_strlen(cmd[0]));
+		write(STDERR_FILENO, "\n", 1);
+	}
+	else if (access(path, X_OK) != 0)
+	{
+		write(STDERR_FILENO, "permission denied: ", 19);
+		write(STDERR_FILENO, cmd[0], ft_strlen(cmd[0]));
+		write(STDERR_FILENO, "\n", 1);
+	}
+	else
+	{
+		perror("execve");
+	}
+	free_array(cmd);
+	free(path);
+	exit(127);
 }
 
 void	execute(char *argv, char **envp)
@@ -37,12 +62,7 @@ void	execute(char *argv, char **envp)
 	path = find_path(cmd[0], envp);
 	handle_cmd_error(cmd, path);
 	if (execve(path, cmd, envp) == -1)
-	{
-		perror("execve"); // fix this by handling issues that dont recognize the command (which can't be found) and handle all errors independently 
-		free_array(cmd);
-		free(path);
-		exit(127);
-	}
+		handle_execve_error(cmd, path);
 }
 
 void	validate_cmd(char *argv)
@@ -52,16 +72,6 @@ void	validate_cmd(char *argv)
 		write(STDERR_FILENO, "command not found: \n", 20);
 		exit(127);
 	}
-}
-
-size_t	ft_strlen(const char *s)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
 }
 
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
